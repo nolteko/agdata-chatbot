@@ -4,9 +4,10 @@ import openai
 import requests
 import io
 import os
+import matplotlib.pyplot as plt
 
 # Set your OpenAI API key
-openai.api_key = os.getenv("OPENAI_API_KEY")  # or hardcode for testing: "sk-..."
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # SAS URL to your Excel file on Azure
 excel_url = "https://agdata1.blob.core.windows.net/datasets/Skyline%20for%20Power%20BI%202.xlsx?sp=r&st=2025-07-09T20:47:10Z&se=2025-07-31T04:47:10Z&spr=https&sv=2024-11-04&sr=b&sig=V1VCaAM7kin4649BVLRnOscR%2FLfn1UraiIYnS%2FkLvLI%3D"
@@ -52,14 +53,13 @@ Respond with just the code block. If the answer requires a chart, use matplotlib
     code = response.choices[0].message.content.strip()
     st.code(code, language="python")
 
-    # Try to run the code (safely)
-     try:
-        exec_globals = {'df': df}
+    # Try to run the code
+    try:
+        exec_globals = {'df': df, 'plt': plt}
         exec(code, exec_globals)
 
         if 'fig' in exec_globals:
-            st.pyplot(exec_globals['fig'])  # for matplotlib
-            # st.plotly_chart(exec_globals['fig'])  # if using Plotly instead
+            st.pyplot(exec_globals['fig'])  # Show matplotlib figure
         elif 'result' in exec_globals:
             st.success("Result:")
             st.write(exec_globals['result'])
