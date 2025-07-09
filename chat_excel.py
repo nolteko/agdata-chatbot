@@ -10,7 +10,7 @@ st.set_page_config(page_title="Chat with Skyline Excel Data", layout="wide")
 st.title("🔍 Chat with Skyline Excel Data")
 
 # Load Excel data from URL or file
-excel_url = "https://github.com/nolteko/agdata-chatbot/raw/main/skyline_crops.xlsx"  # <-- Replace with your file URL
+excel_url = "https://agdata1.blob.core.windows.net/datasets/Skyline%20for%20Power%20BI%202.xlsx?sp=r&st=2025-07-09T20:47:10Z&se=2025-07-31T04:47:10Z&spr=https&sv=2024-11-04&sr=b&sig=V1VCaAM7kin4649BVLRnOscR%2FLfn1UraiIYnS%2FkLvLI%3D"  # <-- Replace with your file URL
 response = requests.get(excel_url)
 df = pd.read_excel(io.BytesIO(response.content))
 
