@@ -42,15 +42,20 @@ Respond with just the code block. If the answer requires a chart, use matplotlib
 """
 
     # Call OpenAI
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You write Python data analysis code using pandas."},
-            {"role": "user", "content": prompt}
-        ]
-    )
+    from openai import OpenAI
 
-    code = response.choices[0].message.content.strip()
+     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
+     response = client.chat.completions.create(
+         model="gpt-4",
+         messages=[
+             {"role": "system", "content": "You write Python data analysis code using pandas."},
+           {"role": "user", "content": prompt}
+    ]
+)
+
+code = response.choices[0].message.content.strip()
+
     st.code(code, language="python")
 
     # Try to run the code
