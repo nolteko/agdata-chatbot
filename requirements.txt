@@ -1,6 +1,6 @@
 streamlit
 pandas
-openai
+openai>=1.2.0
 requests
 openpyxl
 matplotlib
