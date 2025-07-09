@@ -53,15 +53,16 @@ Respond with just the code block. If the answer requires a chart, use matplotlib
     st.code(code, language="python")
 
     # Try to run the code (safely)
-  try:
-    exec_globals = {'df': df}
-    exec(code, exec_globals)
-    
-    if 'fig' in exec_globals:
-        st.pyplot(exec_globals['fig'])  # for matplotlib
-        # or use st.plotly_chart(exec_globals['fig']) if using plotly
-    elif 'result' in exec_globals:
-        st.success("Result:")
-        st.write(exec_globals['result'])
+     try:
+        exec_globals = {'df': df}
+        exec(code, exec_globals)
+
+        if 'fig' in exec_globals:
+            st.pyplot(exec_globals['fig'])  # for matplotlib
+            # st.plotly_chart(exec_globals['fig'])  # if using Plotly instead
+        elif 'result' in exec_globals:
+            st.success("Result:")
+            st.write(exec_globals['result'])
+
     except Exception as e:
         st.error(f"⚠️ Error executing code:\n{e}")
