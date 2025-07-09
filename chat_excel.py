@@ -37,7 +37,7 @@ Here are the first few rows:
 Now answer the following question using Python code:
 {question}
 
-Respond with just the code block, no explanation or text. Assume `df` is already loaded.
+Respond with just the code block. If the answer requires a chart, use matplotlib or plotly and assign it to a variable named `fig`. Assume `df` is already loaded.
 """
 
     # Call OpenAI
