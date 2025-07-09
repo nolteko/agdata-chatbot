@@ -3,3 +3,5 @@ pandas
 openai
 requests
 openpyxl
+matplotlib
+plotly
