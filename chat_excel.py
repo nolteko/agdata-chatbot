@@ -1,37 +1,33 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import openai
-import io
 import requests
+import io
+import matplotlib.pyplot as plt
+from openai import OpenAI
 
-# Set your app title
-st.set_page_config(page_title="Chat with Skyline Excel Data", layout="wide")
-st.title("🔍 Chat with Skyline Excel Data")
-
-# Load Excel data from URL or file
-excel_url = "https://agdata1.blob.core.windows.net/datasets/Skyline%20for%20Power%20BI%202.xlsx?sp=r&st=2025-07-09T20:47:10Z&se=2025-07-31T04:47:10Z&spr=https&sv=2024-11-04&sr=b&sig=V1VCaAM7kin4649BVLRnOscR%2FLfn1UraiIYnS%2FkLvLI%3D"  # <-- Replace with your file URL
+# Load Excel data from Azure Blob Storage
+excel_url = "https://agdata1.blob.core.windows.net/datasets/Skyline%20for%20Power%20BI%202.xlsx?sp=r&st=2025-07-09T20:47:10Z&se=2025-07-31T04:47:10Z&spr=https&sv=2024-11-04&sr=b&sig=V1VCaAM7kin4649BVLRnOscR%2FLfn1UraiIYnS%2FkLvLI%3D"
 response = requests.get(excel_url)
 df = pd.read_excel(io.BytesIO(response.content))
 
-# Preview data
-with st.expander("📄 Preview DataFrame"):
+st.title("🔍 Chat with Skyline Excel Data")
+
+# Optional preview
+with st.expander("📁 Preview DataFrame"):
     st.dataframe(df)
 
-# Chat input
-st.subheader("💬 What do you want to know?")
-prompt = st.text_input("Ask any question about the data below:")
+# User prompt
+prompt = st.text_input("💬 What do you want to know?", placeholder="Ask any question about the data below:")
 
 if prompt:
     try:
-        # Call OpenAI using modern API
-        client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+        # Call OpenAI GPT-3.5
+        client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You write Python data analysis code using pandas. "
-                                              "If the answer requires a chart, use matplotlib and assign it to `fig`. "
-                                              "Assume df is already loaded."},
+                {"role": "system", "content": "You write Python data analysis code using pandas."},
                 {"role": "user", "content": prompt}
             ]
         )
@@ -39,19 +35,18 @@ if prompt:
         code = response.choices[0].message.content.strip()
         st.code(code, language="python")
 
-        # Try to execute the code
+        # Try to run the code
         try:
             exec_globals = {'df': df, 'plt': plt}
             exec(code, exec_globals)
 
             if 'fig' in exec_globals:
-                st.pyplot(exec_globals['fig'])  # Show matplotlib figure
+                st.pyplot(exec_globals['fig'])
             elif 'result' in exec_globals:
                 st.success("Result:")
                 st.write(exec_globals['result'])
-
         except Exception as e:
-            st.error(f"❌ Error while executing code: {e}")
+            st.error(f"Error in executing generated code: {e}")
 
     except Exception as e:
-        st.error(f"❌ OpenAI API Error: {e}")
+        st.error(f"OpenAI API Error: {e}")
